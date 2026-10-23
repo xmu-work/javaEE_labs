@@ -1,0 +1,18 @@
+$ docker node ls
+ID                            HOSTNAME       STATUS    AVAILABILITY   MANAGER STATUS   ENGINE VERSION
+j7ue82xzfilzrb5rmuaqlarbc     compiler       Ready     Active                          20.10.21
+qha2v02dn28gnrmvo062r7dwa     course-node1   Ready     Active                          20.10.21
+pqqksu3ge3qrxiybzi8hi4eqt     course-node2   Ready     Active                          20.10.21
+napmh3szikeiebms4s32nc6i3 *   manager        Ready     Active         Leader           20.10.21
+
+$ docker service ls
+ID             NAME                 MODE         REPLICAS   IMAGE                                                                      PORTS
+qm984ygqhsay   lab_mysql            replicated   1/1        swr.cn-north-4.myhuaweicloud.com/oomall-javaee/mysql:latest                *:3306->3306/tcp
+79yerqeng9hm   lab_node-exporter    global       4/4        swr.cn-north-4.myhuaweicloud.com/oomall-javaee/prom/node-exporter:latest   
+m3lwfkd8mhqe   lab_productdemoaop   replicated   1/1        swr.cn-north-4.myhuaweicloud.com/ooad-mytx/productdemoaop:0.0.1-SNAPSHOT   *:8080->8080/tcp
+pygykagwma1n   lab_prometheus       replicated   1/1        swr.cn-north-4.myhuaweicloud.com/oomall-javaee/prom/prometheus:latest      *:9090->9090/tcp
+
+$ docker service ps lab_productdemoaop lab_mysql lab_prometheus (running)
+lab_mysql.1	course-node1	Running 2 days ago
+lab_productdemoaop.1	course-node2	Running 2 days ago
+lab_prometheus.1	manager	Running 2 days ago

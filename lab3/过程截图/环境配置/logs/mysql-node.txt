@@ -1,0 +1,9 @@
+$ hostname
+course-node1
+
+$ docker ps
+lab_mysql.1.xraqsqf5ne09k3dbpmf7ey9lw	swr.cn-north-4.myhuaweicloud.com/oomall-javaee/mysql:latest	Up 2 days
+lab_node-exporter.qha2v02dn28gnrmvo062r7dwa.ohm387sq3p39xo9wmmblh7o9z	swr.cn-north-4.myhuaweicloud.com/oomall-javaee/prom/node-exporter:latest	Up 2 days
+
+$ docker exec lab_mysql env | grep MYSQL_VERSION
+MYSQL_VERSION=9.2.0-1.el9

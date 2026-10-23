@@ -1,0 +1,84 @@
+$ cat /root/prometheus/prometheus.yml
+global:
+  scrape_interval: 2s # 默认抓取间隔
+  evaluation_interval: 5s # 默认评估间隔
+  scrape_timeout: 1s # 默认抓取超时时间
+
+# 规则文件配置
+rule_files:
+  - "rules/*.yml"
+
+scrape_configs:
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['prometheus:9090']
+  - job_name: 'productdemoaop'
+    metrics_path: '/actuator/prometheus'
+    scrape_timeout: 1s # 抓取超时时间
+    scrape_interval: 2s # 抓取间隔（避免过于频繁）
+    static_configs:
+      - targets: ['productdemoaop:8080']
+  - job_name: 'node'
+    static_configs:
+            - targets: ['172.31.6.17:9100', '172.31.8.71:9100','172.31.13.176:9100','172.31.4.138:9100']
+
+
+$ cat /root/prometheus/rules/recording.yml
+groups:
+  - name: spring_aop_recording_rules
+    interval: 30s
+    rules:
+      # HTTP 请求 QPS
+      - record: spring:http_requests:rate5m
+        expr: rate(http_server_requests_seconds_count[5m])
+
+      # HTTP 请求平均延迟
+      - record: spring:http_request_duration:avg5m
+        expr: rate(http_server_requests_seconds_sum[5m]) / rate(http_server_requests_seconds_count[5m])
+
+      # JVM 堆内存使用率
+      - record: spring:jvm_memory_heap_usage_ratio
+        expr: jvm_memory_used_bytes{area="heap"} / jvm_memory_max_bytes{area="heap"}
+
+      # JVM 非堆内存使用率
+      - record: spring:jvm_memory_nonheap_usage_ratio
+        expr: jvm_memory_used_bytes{area="nonheap"} / jvm_memory_max_bytes{area="nonheap"}
+
+      # GC 频率
+      - record: spring:jvm_gc_pause:rate5m
+        expr: rate(jvm_gc_pause_seconds_count[5m])
+
+      # 线程数
+      - record: spring:jvm_threads_live_threads
+        expr: jvm_threads_live_threads
+
+  - name: node_recording_rules
+    interval: 30s
+    rules:
+      # CPU 使用率百分比
+      - record: node:cpu_usage_percent
+        expr: (1 - sum(rate(node_cpu_seconds_total{mode="idle"}[5m])) by (instance) / sum(rate(node_cpu_seconds_total[5m])) by (instance)) * 100
+
+      # 内存使用率百分比
+      - record: node:memory_usage_percent
+        expr: (1 - (node_memory_MemFree_bytes + node_memory_Buffers_bytes + node_memory_Cached_bytes) / node_memory_MemTotal_bytes) * 100
+      # 磁盘使用率百分比（按挂载点）
+      - record: node:filesystem_usage_percent
+        expr: (1 - (node_filesystem_avail_bytes{mountpoint!="/boot"} / node_filesystem_size_bytes{mountpoint!="/boot"})) * 100
+
+      # 网络接收速率
+      - record: node:network_receive_bytes:rate5m
+        expr: rate(node_network_receive_bytes_total[5m])
+
+      # 网络发送速率
+      - record: node:network_transmit_bytes:rate5m
+        expr: rate(node_network_transmit_bytes_total[5m])
+
+      # 磁盘 I/O 读取速率
+      - record: node:disk_read_bytes:rate5m
+        expr: rate(node_disk_read_bytes_total[5m])
+
+      # 磁盘 I/O 写入速率
+      - record: node:disk_written_bytes:rate5m
+        expr: rate(node_disk_written_bytes_total[5m])
+

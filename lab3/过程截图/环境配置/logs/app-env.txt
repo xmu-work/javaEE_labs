@@ -1,0 +1,18 @@
+$ hostname
+course-node2
+
+$ docker ps
+lab_productdemoaop.1.h8jeo4tu21wuav8j4fkksrnwg	swr.cn-north-4.myhuaweicloud.com/ooad-mytx/productdemoaop:0.0.1-SNAPSHOT	Up 2 days
+lab_node-exporter.pqqksu3ge3qrxiybzi8hi4eqt.vqy23i6st7ek3ooc8qiyvi0iw	swr.cn-north-4.myhuaweicloud.com/oomall-javaee/prom/node-exporter:latest	Up 2 days
+
+$ curl actuator/health
+{"components":{"db":{"details":{"database":"MySQL","validationQuery":"isValid()"},"status":"UP"},"diskSpace":{"details":{"total":41954803712,"free":33829703680,"threshold":10485760,"path":"/app/.","exists":true},"status":"UP"},"livenessState":{"status":"UP"},"ping":{"status":"UP"},"readinessState":{"status":"UP"},"ssl":{"details":{"expiringChains":[],"invalidChains":[],"validChains":[]},"status":"UP"}},"groups":["liveness","readiness"],"status":"UP"}
+
+$ curl GET /shops/10/products/1550
+{"data":{"id":1550,"shopId":10,"name":"欢乐家久宝桃罐头","originalPrice":59337,"weight":700,"barcode":"6924254673572","unit":"瓶","originPlace":"广东","gmtCreate":"2021-11-11T05:12:48"},"errmsg":"Success","errno":0}
+
+$ docker service inspect lab_productdemoaop (args/env/resources)
+["--spring.datasource.password=******","--server.tomcat.threads.max=300","--spring.datasource.druid.max-active=300","--spring.datasource.druid.min-idle=100","--spring.datasource.druid.initial-size=100","--spring.datasource.druid.stat-view-servlet.login-password=******"]
+null
+{}
+{"Constraints":["node.labels.app==yes"],"Platforms":[{"Architecture":"amd64","OS":"linux"}]}

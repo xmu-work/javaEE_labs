@@ -1,0 +1,37 @@
+$ hostname
+compiler
+
+$ cat /etc/os-release
+NAME="Ubuntu"
+VERSION="18.04.6 LTS (Bionic Beaver)"
+
+$ nproc && free -m
+2
+              total        used        free      shared  buff/cache   available
+Mem:           1800         238         521           7        1039        1392
+Swap:             0           0           0
+
+$ java -version
+openjdk version "21.0.2" 2024-01-16
+OpenJDK Runtime Environment (build 21.0.2+13-58)
+OpenJDK 64-Bit Server VM (build 21.0.2+13-58, mixed mode, sharing)
+
+$ mvn -v
+Apache Maven 3.9.16 (2bdd9fddda4b155ebf8000e807eb73fd829a51d5)
+Maven home: /root/apache-maven-3.9.16
+Java version: 21.0.2, vendor: Oracle Corporation, runtime: /root/jdk-21.0.2
+
+$ jmeter --version
+/_/   \_\_| /_/   \_\____|_| |_|_____|  \___/|_|  |_|_____| |_| |_____|_| \_\ 5.6.3
+
+$ grep overall_granularity user.properties
+76:jmeter.reportgenerator.overall_granularity=1000
+
+$ cat jmeter-command.sh
+#!/bin/bash
+export JVM_ARGS="-Xms256m -Xmx512m -Xss256k -XX:MaxMetaspaceSize=256m"
+name=$1-$2-$3-$4
+echo "testing ${name} ....."
+mkdir ${name}
+jmeter -n -t $1.jmx -Dthread.num=$2 -Drampup.period=$3 -Dloop.count=$4 -l ${name}.jtl -e -o ${name}/
+
